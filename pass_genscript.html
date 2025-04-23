@@ -1,0 +1,110 @@
+function generatePassword() {
+    const length = document.getElementById("length").value;
+    const includeUppercase = document.getElementById("uppercase").checked;
+    const includeNumbers = document.getElementById("numbers").checked;
+    const includeSymbols = document.getElementById("symbols").checked;
+
+    const lowercase = "abcdefghijklmnopqrstuvwxyz";
+    const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const numbers = "0123456789";
+    const symbols = "!@#$%^&*()_+[]{}<>?/";
+
+    let characters = lowercase;
+    if (includeUppercase) characters += uppercase;
+    if (includeNumbers) characters += numbers;
+    if (includeSymbols) characters += symbols;
+
+    let password = "";
+    if(length>=4 && length<=25){
+        for (let i = 0; i < length; i++) {
+            const randomChar = characters.charAt(Math.floor(Math.random() * characters.length));
+            password += randomChar;
+        }
+    }
+
+    document.getElementById("result").value = password;
+    updateStrengthMeter(password);
+
+}
+
+function savePassword() {
+    const password = document.getElementById("result").value;
+    const user = localStorage.getItem("loggedInUser");
+
+    if (!user) {
+        alert("Please log in to save passwords.");
+        return;
+    }
+
+    const userData = JSON.parse(localStorage.getItem(user));
+    userData.saved.push(password);
+
+    localStorage.setItem(user, JSON.stringify(userData));
+
+    const saveMsg = document.getElementById("saveMessage");
+    saveMsg.style.opacity = 1;
+    setTimeout(() => {
+        saveMsg.style.opacity = 0;
+    }, 1500);
+}
+
+
+function toggleVisibility() {
+    const result = document.getElementById("result");
+    const toggle = document.getElementById("toggleVisibility");
+    if (result.type === "password") {
+        result.type = "text";
+        toggle.textContent = "🔒";
+    } else {
+        result.type = "password";
+        toggle.textContent = "🔓️";
+    }
+}
+
+function copyPassword() {
+    const result = document.getElementById("result");
+    result.select();
+    result.setSelectionRange(0, 99999); // for mobile
+    document.execCommand("copy");
+
+    const msg = document.getElementById("copyMessage");
+    msg.style.opacity = 1;
+    setTimeout(() => {
+        msg.style.opacity = 0;
+    }, 1500);
+}
+
+function updateStrengthMeter(password) {
+    const bar = document.getElementById("strengthBar");
+    const strengthText = document.getElementById("strengthText");
+
+    let strength = 0;
+    if (/[a-z]/.test(password)) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/\d/.test(password)) strength++;
+    if (/[^a-zA-Z0-9]/.test(password)) strength++;
+    if (password.length >= 12) strength++;
+
+    const strengthLevels = ["Very Weak", "Weak", "Moderate", "Strong", "Very Strong"];
+    const colors = ["red", "orange", "yellow", "blue", "green"];
+
+    bar.style.width = `${(strength / 5) * 100}%`;
+    bar.style.backgroundColor = colors[strength - 1] || "red";
+    strengthText.textContent = strengthLevels[strength - 1] || "Very Weak";
+}
+
+window.onload = function () {
+    const user = localStorage.getItem("loggedInUser");
+    if (user) {
+        const userData = JSON.parse(localStorage.getItem(user));
+        const savedList = document.getElementById("savedList");
+        savedList.innerHTML = "";
+
+        userData.saved.forEach(pwd => {
+            const li = document.createElement("li");
+            li.className = "list-group-item";
+            li.textContent = pwd;
+            savedList.appendChild(li);
+        });
+    }
+};
