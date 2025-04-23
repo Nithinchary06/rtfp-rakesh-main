@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Account</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="pass_genStyle.css">
+  <script src="pass_gen_user_script.js"></script>
+</head>
+<body>
+  <div class="pass-container shadow mt-5">
+    <h2 class="text-center mb-4">Welcome, <span id="userEmail"></span>!</h2>
+
+    <div>
+      <h4>Password Generator</h4>
+      <!-- Reuse your generator UI here -->
+      <input type="number" id="length" min="4" max="25" value="8" class="form-control mb-2">
+      <div class="form-check"><input type="checkbox" id="uppercase" checked> Include Uppercase</div>
+      <div class="form-check"><input type="checkbox" id="numbers" checked> Include Numbers</div>
+      <div class="form-check"><input type="checkbox" id="symbols" checked> Include Symbols</div>
+      <button class="btn btn-primary btn-block mt-2" onclick="generatePassword()">Generate</button>
+      
+      <input type="text" id="result" class="form-control mt-3" readonly>
+      <button class="cp-button mt-3" onclick="copyPassword()">Copy</button>
+        <span id="copyMessage" class="ml-5">Copied!</span>
+        <button class="cp-button mt-3" onclick="savePassword()">Save</button>
+        <span id="saveMessage" class="ml-2 text-success" style="opacity: 0;">Saved!</span>
+    </div>
+
+    <div class="mt-4">
+      <h5>Saved Passwords</h5>
+      <ul id="savedList" class="list-group"></ul>
+    </div>
+
+    <button class="btn btn-outline-secondary butn-size btn-block mt-3" onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    const user = localStorage.getItem("loggedInUser");
+    if (!user) {
+      alert("You must log in first.");
+      window.location.href = "pass_gen_login.html"; // Redirect to login page
+    } else {
+      document.getElementById("userEmail").textContent = user;
+    }
+
+    // Password generator functionality, copy password, and save password
+    function generatePassword() {
+        // Add logic to generate password
+    }
+
+    
+function copyPassword() {
+    const result = document.getElementById("result");
+    result.select();
+    result.setSelectionRange(0, 99999); // for mobile
+    document.execCommand("copy");
+
+    const msg = document.getElementById("copyMessage");
+    msg.style.opacity = 1;
+    setTimeout(() => {
+        msg.style.opacity = 0;
+    }, 1500);
+}
+
+    function savePassword() {
+        // Save password logic
+    }
+
+    function logout() {
+        localStorage.removeItem("loggedInUser");
+        window.location.href = "pass_gen_login.html";
+    }
+  </script>
+  
+</body>
+</html>
